@@ -1,20 +1,24 @@
-# MuKEA: Multimodal Knowledge Extraction and Accumulation for Knowledge-based Visual Question Answering
+# FMC-PRNet: Frequency-Modulated Coupled Progressive Refinement Network for Real-Time Aerial Small Object Detection
 
-This code implements a multimodal knowledge extraction model. The model generates output features corresponding to knowledge triplet. These knowledge features can typically be used in the following potential application scenarios:
-- Model-based knowledge search. MuKEA is capable of retrieving relevant knowledge for multimodal input.
-- Knowledge-based vision-language tasks, such as image caption, referring expression comprehension, vision-language navigation etc.
-- Explainable deep learning, especially in the legal, medical fields.
+This code implements FMC-PRNet, an advanced and lightweight object detection framework specifically tailored for complex aerial and high-altitude imagery. The model fundamentally addresses the severe information loss of tiny objects in deep networks by integrating Enhanced Slice Sampling (ESSamp), Frequency-Modulated Coupling (FMC), Residual Atrous Spatial Pyramid Pooling (ResASPP), and a Progressive Refinement Network (PRNet). These features can typically be used in the following potential application scenarios:
+- Real-time UAV (Unmanned Aerial Vehicle) edge-computing deployment.
+- Power grid and equipment inspection (e.g., small insulator defect detection).
+- High-altitude aerial object detection under complex backgrounds (urban traffic, maritime ships, dense crowds).
+- Scenarios requiring "Train from Scratch" capability without dependency on massive pre-trained weights.
 
-This approach was used to achieve state-of-the-art knowledge-based visual question answering performance on [OKVQA](https://arxiv.org/abs/1906.00067) (42.59% overall accuracy) and [KRVQA](https://arxiv.org/pdf/2012.07192.pdf) (27.38% overall accuracy), as described in:
+This approach was used to achieve state-of-the-art real-time small object detection performance on VisDrone2019 (approaching 68% mAP@0.5 for the Large variant), AI-TOD, and SIMD, achieving an optimal Pareto balance between accuracy and inference speed (up to 93.6 FPS for the Nano variant), as described in:
 
-[paper link](http://arxiv.org/abs/2203.09138)
+[paper link](Paper Link (Coming Soon)).
 
-![MuKEA](https://github.com/AndersonStra/MuKEA/blob/main/model.PNG)
+<div align="center">
+  <img src="fig2.png" alt="FMC-PRNet Architecture" width="90%">
+</div>
 
 
 ## Requirement
-Pytorch == 1.6.0          
-transformers == 3.5.0               
+Python >= 3.8
+Pytorch >= 1.9.0
+torchvision >= 0.10.0        
 
 ## Training       
 1. Create model_save_dir 
@@ -27,70 +31,47 @@ mkdir model_save_dir
 $ mkdir data
 $ cd data
 ```
-Download annotation from 
+## 📂 Data Preparation
+You can download the original datasets from their official repositories:
+- **[VisDrone2019](https://github.com/VisDrone/VisDrone-Dataset)**: A large-scale drone-based dataset.
+- **[AI-TOD](https://github.com/jwwangchn/AI-TOD)**: Aerial Imagery for Tiny Object Detection.
+- **[SIMD](<Link_to_SIMD_dataset>)**: Satellite Imagery Multi-vehicles Dataset. *(Note: Replace with your specific download link if you host a pre-processed version)*
 
-[google drive](https://drive.google.com/file/d/1YuOUTbK7rged0gopQko5rdQuHKxiW9sv/view?usp=sharing)
+After downloading, we strictly reorganized the storage structure of images and labels into the standard YOLO format to avoid `AssertionError` during data loading. Please structure your directories exactly as follows:
 
-We reorganized the storage structure of image features as:
+```text
+dataset_dir/
+├── images/
+│   ├── train/  <-- (Contains .jpg files)
+│   └── val/
+└── labels/
+    ├── train/  <-- (Contains .txt files)
+    └── val/
+```
+Please modify the train and val paths in your specific dataset YAML file (e.g., SIMD.yaml, AI-TOD.yaml) to point to the images/train and images/val directories. The data loader will automatically locate the corresponding labels directory.
+
+Multi-GPU Training (Train from Scratch)
+
+FMC-PRNet demonstrates exceptional endogenous learning capabilities and is trained from scratch without external pre-trained weights. To launch distributed training across multiple GPUs, use the torchrun utility.
+
+Example for training the Small (S) variant on VisDrone using 2 GPUs:
 
 ```
-vqa_img_feature_train.pickle{
-"image_id":{'feats': features, 'sp_feats': spatial features}
-}
+CUDA_VISIBLE_DEVICES=0,1 PYTHONWARNINGS="ignore" NCCL_P2P_DISABLE=1 NCCL_IB_DISABLE=1 torchrun --nproc_per_node 2 --master_port 29500 tools/train.py --batch-size 16 --conf-file ./configs/fmc_prnet-s.py --data-path ./data/VisDrone.yaml --epochs 400 --img-size 1280 --fuse_ab --use_syncbn --device 0,1 --name FMC_PRNet_S_VisDrone --output-dir ./result --workers 4
 ```
 
-The pre-trained LXMERT model expects these spacial features to be normalized bounding boxes on a scale of 0 to 1
-
-The image features are provided by and downloaded from the original bottom-up attention' [repo](https://github.com/peteanderson80/bottom-up-attention#pretrained-features),  then follow the [script](https://github.com/AndersonStra/MuKEA/blob/main/vqa_v2_pretrain/tsv2feature.py) to process the feature.
+Single-GPU Training：
 
 ```
-python tsv2feature.py
+python tools/train.py --batch-size 16 --conf-file ./configs/fmc_prnet-n.py --data-path ./data/SIMD.yaml --epochs 400 --img-size 800 --device 0 --name FMC_PRNet_N_SIMD --output-dir ./result
 ```
 
-### Optional download link
-The image features with **objects' label** are provided by and downloaded from the origin LXMERT' [repo](https://github.com/airsplay/lxmert#google-drive), then follow the [script](https://github.com/AndersonStra/MuKEA/blob/main/vqa_v2_pretrain/tsv2feature_objects.py) to process the feature.
+Evaluation
+
+To evaluate a trained model on the validation or test set:
 
 ```
-python tsv2feature_objects.py
+python tools/eval.py --conf-file ./configs/fmc_prnet-l.py --data-path ./data/AI-TOD.yaml --weights ./result/FMC_PRNet_L_Final/weights/best.pt --img-size 800 --device 0
 ```
 
-### Image features for KRVQA
-The image features for KRVQA are generated based on the code in this [repo](https://github.com/violetteshev/bottom-up-features), and can be downloaded form 
-
-[google drive](https://drive.google.com/file/d/1YUhqLLXGouBsy6C-i8SIQ86VXIkclrm9/view?usp=sharing)
-
-unzip the file and put it under `/data/kr-vqa`
-
-### Pre-training on VQAv2
-```
-python train.py --embedding --model_dir model_save_dir --dataset finetune-dataset/okvqa/krvqa/vqav2 --pretrain --accumulate --validate
-```       
-
-note: `--dataset` parameter is to set the dataset for finetune
-
-
-The default learning rate is set to 1e-4 which will lead to faster convergence. If the training is unstable, please set the learning rate to 1e-5 manually in the pre-training stage.
-
-### Fine-tuning     
-```
-python train.py --embedding --model_dir model_save_dir --dataset okvqa/krvqa/vqav2 --load_pthpath model_save_dir/checkpoint --accumulate --validate
-```
-
-### w/o pre-training
-```
-python train.py --embedding --model_dir model_save_dir --dataset okvqa/krvqa --validate
-```
-
-### Models
-
-[OKVQA w/ pretrain](https://drive.google.com/file/d/1SXvdcRP6PtMM_IpAZO81xT71vU3_S16H/view?usp=share_link)
-
-### Bibtex
-```
-@inproceedings{Ding2022mukea,
-  title={MuKEA: Multimodal Knowledge Extraction and Accumulation for Knowledge-based Visual Question Answering},
-  author={Yang Ding and Jing Yu and Bang Liu and Yue Hu and Mingxin Cui and Qi Wug},
-  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-  year={2022}
-}
-```
+Citation information will be updated soon.
