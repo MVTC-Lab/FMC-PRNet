@@ -11,7 +11,7 @@ This approach was used to achieve state-of-the-art real-time small object detect
 [paper link](Paper Link (Coming Soon)).
 
 <div align="center">
-  <img src="fig2.png" alt="FMC-PRNet Architecture" width="90%">
+  <img src="FMC-PRNet-Architecture.png" alt="FMC-PRNet Architecture" width="90%">
 </div>
 
 
