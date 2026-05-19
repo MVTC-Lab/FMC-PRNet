@@ -71,7 +71,7 @@ Evaluation
 To evaluate a trained model on the validation or test set:
 
 ```
-python tools/eval.py --conf-file ./configs/fmc_prnet-l.py --data-path ./data/AI-TOD.yaml --weights ./result/FMC_PRNet_L_Final/weights/best.pt --img-size 800 --device 0
+yolo detect val model=<path_to_your_best.pt> data=<data_path> imgsz=1280 batch=16 device=0 workers=8 project=<project_dir> name=<val_name>
 ```
 
 Citation information will be updated soon.
