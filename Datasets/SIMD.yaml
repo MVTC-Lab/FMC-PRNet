@@ -1,0 +1,23 @@
+
+path: /workspace/Gold-YOLO/SIMD
+train: /workspace/Gold-YOLO/SIMD/images/train
+val: /workspace/Gold-YOLO/SIMD/images/val
+
+nc: 15
+
+names:
+  0: car                 # 轿车
+  1: truck               # 卡车
+  2: van                 # 厢式货车
+  3: long_vehicle        # 加长车辆/挂车
+  4: bus                 # 公交车
+  5: airliner            # 大型客机
+  6: propeller_aircraft  # 螺旋桨飞机
+  7: trainer_aircraft    # 教练机
+  8: chartered_aircraft  # 包机/商务机
+  9: fighter_aircraft    # 战斗机
+  10: helicopter         # 直升机
+  11: stair_truck        # 客梯车 (机场特种车辆)
+  12: pushback_truck     # 牵引车 (机场特种车辆)
+  13: boat               # 船只
+  14: others             # 其他

@@ -1,0 +1,7 @@
+path: /workspace/Gold-YOLO/AI-TOD
+train: /workspace/Gold-YOLO/AI-TOD/images/train
+val: /workspace/Gold-YOLO/AI-TOD/images/val
+#test: test/images
+
+nc: 8
+names: ['airplane', 'bridge', 'storage-tank', 'ship', 'swimming-pool', 'vehicle', 'person', 'wind-mill']
