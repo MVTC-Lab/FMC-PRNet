@@ -57,13 +57,13 @@ FMC-PRNet demonstrates exceptional endogenous learning capabilities and is train
 Example for training the Small (S) variant on VisDrone using 2 GPUs:
 
 ```
-CUDA_VISIBLE_DEVICES=0,1 PYTHONWARNINGS="ignore" NCCL_P2P_DISABLE=1 NCCL_IB_DISABLE=1 torchrun --nproc_per_node 2 --master_port 29500 tools/train.py --batch-size 16 --conf-file ./configs/fmc_prnet-s.py --data-path ./data/VisDrone.yaml --epochs 400 --img-size 1280 --fuse_ab --use_syncbn --device 0,1 --name FMC_PRNet_S_VisDrone --output-dir ./result --workers 4
+CUDA_VISIBLE_DEVICES=6,7 NCCL_P2P_DISABLE=1 NCCL_IB_DISABLE=1 --nproc_per_node 2 yolo detect train model=<model_path> data=<data_path> pretrained=False epochs=400 imgsz=1280 batch=16 device=<device_ids> workers=8 optimizer=SGD lr0=0.01 momentum=0.937 weight_decay=0.001 project=<project_dir> name=<run_name> patience=30 save=True val=True
 ```
 
 Single-GPU Training：
 
 ```
-python tools/train.py --batch-size 16 --conf-file ./configs/fmc_prnet-n.py --data-path ./data/SIMD.yaml --epochs 400 --img-size 800 --device 0 --name FMC_PRNet_N_SIMD --output-dir ./result
+yolo detect train model=<model_path> data=<data_path> pretrained=False epochs=400 imgsz=1280 batch=16 device=<device_ids> workers=8 optimizer=SGD lr0=0.01 momentum=0.937 weight_decay=0.0005 project=<project_dir> name=<run_name> patience=30 save=True val=True
 ```
 
 Evaluation
