@@ -6,7 +6,7 @@ This code implements FMC-PRNet, an advanced and lightweight object detection fra
 - High-altitude aerial object detection under complex backgrounds (urban traffic, maritime ships, dense crowds).
 - Scenarios requiring "Train from Scratch" capability without dependency on massive pre-trained weights.
 
-This approach was used to achieve state-of-the-art real-time small object detection performance on VisDrone2019 (approaching 68% mAP@0.5 for the Large variant), AI-TOD, and SIMD, achieving an optimal Pareto balance between accuracy and inference speed (up to 93.6 FPS for the Nano variant), as described in:
+This approach was used to achieve state-of-the-art real-time small object detection performance on VisDrone2019 (approaching 60% mAP@0.5 for the Large variant), AI-TOD, and SIMD, achieving an optimal Pareto balance between accuracy and inference speed (up to 65.5 FPS for the Nano variant), as described in:
 
 [paper link](Paper Link (Coming Soon)).
 
