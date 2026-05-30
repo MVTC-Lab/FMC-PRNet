@@ -11,7 +11,7 @@ This approach was used to achieve state-of-the-art real-time small object detect
 [paper link](Paper Link (Coming Soon)).
 
 <div align="center">
-  <img src="FMC-PRNet-Architecture.png" alt="FMC-PRNet Architecture" width="90%">
+  <img src="\images\FMC-PRNet-Architecture.png" alt="FMC-PRNet Architecture" width="90%">
 </div>
 
 > ⚠️ **Important Note:** > This project includes low-level modifications to the original Ultralytics source code (e.g., customized `ResASPP_Optimized` modules). Please run the scripts directly using the provided `ultralytics` directory within this repository instead of installing the official `ultralytics` pip package.
